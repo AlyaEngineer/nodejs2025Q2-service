@@ -1,72 +1,51 @@
-# Home Library Service
+# <h1 align="center">Home Library Service</h1>
 
-## Prerequisites
+## Description
+This project is a RESTful API service for managing a personal media library (users, tracks, albums, artists, and favorites). It created as part of the RS School [Node.js course](https://rs.school/courses/nodejs).
+All data is stored in memory, and the architecture is prepared for easy migration to a real database in future tasks. Built with NestJS and TypeScript.
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+## Install and Run the Application
 
-## Downloading
+- Clone the repository from GitHub:
 
+```bash
+git clone https://github.com/AlyaEngineer/nodejs2025Q2-service.git
 ```
-git clone {repository URL}
+
+- Go to the development branch:
+
+```bash
+git switch part-1
 ```
 
-## Installing NPM modules
+- Install the dependencies:
 
-```
+```bash
 npm install
 ```
 
-## Running application
+- Create an `.env` file in the root directory of the project. You can use the provided `.env.example` as a template:
 
+```bash
+cp .env.example .env
 ```
-npm start
+
+- Open the `.env` file and fill in the required environment variables:
+
+```bash
+PORT=value_of_port
 ```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+- Start the server:
 
-## Testing
-
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
+```bash
+npm run start
 ```
+
+- Run all tests:
+
+```bash
 npm run test
 ```
 
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
-```
-
-To run all test with authorization
-
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
-
-```
-npm run lint
-```
-
-```
-npm run format
-```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+**Interactive documentation will be available at the following URL: [http://localhost:4000/doc](http://localhost:4000/doc).**

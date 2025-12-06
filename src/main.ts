@@ -10,7 +10,7 @@ import * as YAML from 'yaml';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
-  const PORT = config.get('PORT');
+  const PORT = config.get('PORT') || 4000;
 
   app.useGlobalPipes(new ValidationPipe());
 

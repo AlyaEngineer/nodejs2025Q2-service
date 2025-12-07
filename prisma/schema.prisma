@@ -8,84 +8,48 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(uuid())
-  login           String            @unique
-  password        String
-  version         Int
-  createdAt       Int
-  updatedAt       Int
-  favoriteAlbums  FavoriteAlbums[]
-  favoriteArtists FavoriteArtists[]
-  favoriteTracks  FavoriteTracks[]
+  id        String @id @default(uuid())
+  login     String @unique
+  password  String
+  version   Int    @default(1)
+  createdAt BigInt @default(dbgenerated("((EXTRACT(epoch FROM now()) * (1000)::numeric))::bigint"))
+  updatedAt BigInt @default(dbgenerated("((EXTRACT(epoch FROM now()) * (1000)::numeric))::bigint"))
 
   @@map("user")
 }
 
 model Artist {
-  id              String            @id @default(uuid())
-  name            String
-  grammy          Boolean
-  albums          Album[]
-  favoriteArtists FavoriteArtists[]
-  tracks          Track[]
+  id     String  @id @default(uuid())
+  name   String
+  grammy Boolean
 
   @@map("artist")
 }
 
 model Album {
-  id             String           @id @default(uuid())
-  name           String
-  year           Int
-  artistId       String?
-  artist         Artist?          @relation(fields: [artistId], references: [id])
-  favoriteAlbums FavoriteAlbums[]
-  tracks         Track[]
+  id       String  @id @default(uuid())
+  name     String
+  year     Int
+  artistId String?
 
   @@map("album")
 }
 
 model Track {
-  id             String           @id @default(uuid())
-  name           String
-  artistId       String?
-  albumId        String?
-  duration       Int
-  favoriteTracks FavoriteTracks[]
-  album          Album?           @relation(fields: [albumId], references: [id])
-  artist         Artist?          @relation(fields: [artistId], references: [id])
+  id       String  @id @default(uuid())
+  name     String
+  artistId String?
+  albumId  String?
+  duration Int
 
   @@map("track")
 }
 
-model FavoriteArtists {
-  id       String @id @default(uuid())
-  userId   String
-  artistId String
-  artist   Artist @relation(fields: [artistId], references: [id])
-  user     User   @relation(fields: [userId], references: [id])
+model Favorites {
+  id      String   @id @default(uuid())
+  artists String[]
+  albums  String[]
+  tracks  String[]
 
-  @@unique([userId, artistId])
-  @@map("favorite_artists")
-}
-
-model FavoriteAlbums {
-  id      String @id @default(uuid())
-  userId  String
-  albumId String
-  album   Album  @relation(fields: [albumId], references: [id])
-  user    User   @relation(fields: [userId], references: [id])
-
-  @@unique([userId, albumId])
-  @@map("favorite_albums")
-}
-
-model FavoriteTracks {
-  id      String @id @default(uuid())
-  userId  String
-  trackId String
-  track   Track  @relation(fields: [trackId], references: [id])
-  user    User   @relation(fields: [userId], references: [id])
-
-  @@unique([userId, trackId])
-  @@map("favorite_tracks")
+  @@map("favorites")
 }

@@ -22,7 +22,7 @@ async function bootstrap() {
   }
 
   await initSwagger(app);
-  await app.listen(PORT);
+  await app.listen(PORT, '0.0.0.0');
 
   console.log(`Server running at http://localhost:${PORT}`);
   console.log(`Swagger is available at: http://localhost:${PORT}/doc`);

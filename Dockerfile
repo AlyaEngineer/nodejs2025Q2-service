@@ -17,13 +17,17 @@ WORKDIR /app
 
 RUN apk add --no-cache openssl bash libc6-compat
 
+COPY package*.json ./
+
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/doc ./doc
+COPY prisma.config.ts ./
 
 RUN rm -rf ./dist/**/*.ts ./dist/**/*.map
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy --config prisma.config.ts && node dist/src/main"]
+

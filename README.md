@@ -39,13 +39,26 @@ DB_PASSWORD=
 DB_NAME=
 DB_HOST=
 DB_PORT=
-DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public
+DATABASE_URL=
 ```
+When running the application with Docker:
+
+- `DB_HOST` **must be set to** `db`, because this is the name of the PostgreSQL
+  service in `docker-compose.yaml`
+- `DB_PORT` is `5432` (default PostgreSQL port inside Docker network)
+
+Other variables (`DB_USER`, `DB_PASSWORD`, `DB_NAME`) can be freely changed.
 
 - Install dependencies:
 
 ```bash
 npm ci
+```
+
+- Generate Prisma client:
+
+```bash
+npx prisma generate
 ```
 
 - Start the server:

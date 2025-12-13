@@ -8,7 +8,11 @@ COPY package*.json ./
 
 RUN npm ci
 
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 COPY . .
+RUN npx prisma generate
 RUN npm run build
 
 # Stage 2: Runtime
@@ -29,5 +33,4 @@ RUN rm -rf ./dist/**/*.ts ./dist/**/*.map
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "npx prisma migrate deploy --config prisma.config.ts && node dist/src/main"]
-
+CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy --config prisma.config.ts && node dist/src/main"]

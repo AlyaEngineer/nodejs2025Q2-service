@@ -34,5 +34,5 @@ RUN rm -rf ./dist/**/*.ts ./dist/**/*.map
 EXPOSE 4000
 
 COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh"]
+RUN dos2unix entrypoint.sh && chmod +x entrypoint.sh
+ENTRYPOINT ["sh", "./entrypoint.sh"]

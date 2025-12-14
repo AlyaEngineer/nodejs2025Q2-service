@@ -33,4 +33,6 @@ RUN rm -rf ./dist/**/*.ts ./dist/**/*.map
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy --config prisma.config.ts && node dist/src/main"]
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]

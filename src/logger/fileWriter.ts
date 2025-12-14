@@ -9,9 +9,9 @@ import {
 import { dirname } from 'node:path';
 import { shouldLog } from './logLevels';
 
-const MAX_SIZE_KB = Number(process.env.LOG_MAX_SIZE_KB) || 1;
-
 function rotateFile(filePath: string) {
+  const MAX_SIZE_KB = Number(process.env.LOG_MAX_SIZE_KB) || 1;
+
   const dir = dirname(filePath);
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });

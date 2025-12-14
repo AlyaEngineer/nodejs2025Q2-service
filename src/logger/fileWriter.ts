@@ -7,6 +7,7 @@ import {
   renameSync,
 } from 'node:fs';
 import { dirname } from 'node:path';
+import { shouldLog } from './logLevels';
 
 const MAX_SIZE_KB = Number(process.env.LOG_MAX_SIZE_KB) || 1;
 
@@ -36,6 +37,8 @@ export function writeToFile(
   context?: string,
   trace?: string,
 ) {
+  if (!shouldLog(level)) return;
+
   rotateFile(filePath);
 
   const time = new Date().toISOString();

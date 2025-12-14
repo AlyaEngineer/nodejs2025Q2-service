@@ -1,26 +1,30 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule } from '@nestjs/swagger';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+import * as YAML from 'yaml';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
-  const PORT = config.get('PORT');
+  const PORT = config.get('PORT') || 4000;
 
   app.useGlobalPipes(new ValidationPipe());
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Home Library Service')
-    .setDescription('Home music library service')
-    .setVersion('1.0.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  async function initSwagger(app: INestApplication) {
+    const file = await readFile(join(__dirname, '../doc/api.yaml'), 'utf8');
+    const document = YAML.parse(file);
 
-  SwaggerModule.setup('doc', app, document);
+    SwaggerModule.setup('doc', app, document);
+  }
 
-  await app.listen(PORT);
+  await initSwagger(app);
+  await app.listen(PORT, '0.0.0.0');
+
   console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Swagger is available at: http://localhost:${PORT}/doc`);
 }
 bootstrap();

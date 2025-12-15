@@ -123,13 +123,124 @@ components:
         - albums
         - tracks
 
+  securitySchemes:
+    access-token:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
 paths:
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Sign up a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  example: TestUser
+                password:
+                  type: string
+                  example: paSsword123
+              required:
+                - login
+                - password
+      responses:
+        201:
+          description: User successfully registered.
+        400:
+          description: Invalid request body.
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  example: TestUser
+                password:
+                  type: string
+                  example: paSsword123
+              required:
+                - login
+                - password
+      responses:
+        200:
+          description: Returns access and refresh tokens.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+        400:
+          description: Invalid request body.
+        403:
+          description: Authentication failed.
+
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh Access and Refresh tokens
+      description: Sends a valid refresh token and returns a new pair of Access and Refresh tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: The user's current refresh token
+              required:
+                - refreshToken
+      responses:
+        200:
+          description: Tokens successfully refreshed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: New access token
+                  refreshToken:
+                    type: string
+                    description: New refresh token
+        401:
+          description: Refresh token not provided
+        403:
+          description: Invalid or expired refresh token
+      security: []
+
   /user:
     get:
       tags:
         - User
       summary: Get all users
       description: Gets all users
+      security:
+        - access-token: []
       responses:
         200:
           description: Successful operation.
@@ -144,6 +255,8 @@ paths:
         - User
       summary: Create user
       description: Creates a new user
+      security:
+        - access-token: []
       requestBody:
         required: true
         content:
@@ -182,6 +295,8 @@ paths:
         - User
       summary: Get single user by ID
       description: Get single user by ID
+      security:
+        - access-token: []
       responses:
         200:
           description: Successful operation.
@@ -199,6 +314,8 @@ paths:
         - User
       summary: Update a user's password
       description: Updates a user's password by ID
+      security:
+        - access-token: []
       requestBody:
         required: true
         content:
@@ -235,6 +352,8 @@ paths:
         - User
       summary: Delete user
       description: Deletes user by ID
+      security:
+        - access-token: []
       responses:
         204:
           description: The user has been deleted.
@@ -248,6 +367,8 @@ paths:
         - Track
       summary: Get tracks list
       description: Gets all tracks list
+      security:
+        - access-token: []
       responses:
         200:
           description: Successful operation.
@@ -262,6 +383,8 @@ paths:
         - Track
       summary: Add new track
       description: Add new track information
+      security:
+        - access-token: []
       requestBody:
         required: true
         content:
@@ -290,6 +413,8 @@ paths:
         - Track
       summary: Get single track by ID
       description: Gets single track by ID
+      security:
+        - access-token: []
       responses:
         200:
           description: Successful operation.
@@ -306,6 +431,8 @@ paths:
         - Track
       summary: Update track information
       description: Update track information by ID
+      security:
+        - access-token: []
       requestBody:
         required: true
         content:
@@ -328,6 +455,8 @@ paths:
         - Track
       summary: Delete track
       description: Delete track from library by ID
+      security:
+        - access-token: []
       responses:
         204:
           description: Deleted successfully.
@@ -341,6 +470,8 @@ paths:
         - Album
       summary: Get albums list
       description: Gets all albums list
+      security:
+        - access-token: []
       responses:
         200:
           description: Successful operation.
@@ -355,6 +486,8 @@ paths:
         - Album
       summary: Add new album
       description: Add new album information
+      security:
+        - access-token: []
       requestBody:
         required: true
         content:
@@ -383,6 +516,8 @@ paths:
         - Album
       summary: Get single album by ID
       description: Gets single album by ID
+      security:
+        - access-token: []
       responses:
         200:
           description: Successful operation.
@@ -399,6 +534,8 @@ paths:
         - Album
       summary: Update album information
       description: Update album information by ID
+      security:
+        - access-token: []
       requestBody:
         required: true
         content:
@@ -421,6 +558,8 @@ paths:
         - Album
       summary: Delete album
       description: Delete album from library by ID
+      security:
+        - access-token: []
       responses:
         204:
           description: Deleted successfully.
@@ -434,6 +573,8 @@ paths:
         - Artist
       summary: Get all artists
       description: Gets all artists list
+      security:
+        - access-token: []
       responses:
         200:
           description: Successful operation.
@@ -448,6 +589,8 @@ paths:
         - Artist
       summary: Add new artist
       description: Add new artist
+      security:
+        - access-token: []
       requestBody:
         required: true
         content:
@@ -476,6 +619,8 @@ paths:
         - Artist
       summary: Get single artist by ID
       description: Get single artist by ID
+      security:
+        - access-token: []
       responses:
         200:
           description: Successful operation.
@@ -492,6 +637,8 @@ paths:
         - Artist
       summary: Update artist information
       description: Update artist information by ID
+      security:
+        - access-token: []
       requestBody:
         required: true
         content:
@@ -514,6 +661,8 @@ paths:
         - Artist
       summary: Delete artist
       description: Delete artist from library by ID
+      security:
+        - access-token: []
       responses:
         204:
           description: Deleted successfully.
@@ -527,6 +676,8 @@ paths:
         - Favorites
       summary: Get all favorites
       description: Gets all favorites albums, tracks and artists
+      security:
+        - access-token: []
       responses:
         200:
           description: Successful operation.
@@ -560,6 +711,8 @@ paths:
         - Favorites
       summary: Add track to the favorites
       description: Add track to the favorites by ID
+      security:
+        - access-token: []
       responses:
         201:
           description: Track successfully added to favorites.
@@ -572,6 +725,8 @@ paths:
         - Favorites
       summary: Delete track from favorites
       description: Delete track from favorites by ID
+      security:
+        - access-token: []
       responses:
         204:
           description: Track deleted successfully from favorites.
@@ -592,6 +747,8 @@ paths:
         - Favorites
       summary: Add album to the favorites
       description: Add album to the favorites by ID
+      security:
+        - access-token: []
       responses:
         201:
           description: Album successfully added to favorites.
@@ -604,6 +761,8 @@ paths:
         - Favorites
       summary: Delete album from favorites
       description: Delete album from favorites by ID
+      security:
+        - access-token: []
       responses:
         204:
           description: Album deleted successfully from favorites.
@@ -624,6 +783,8 @@ paths:
         - Favorites
       summary: Add artist to the favorites
       description: Add artist to the favorites by ID
+      security:
+        - access-token: []
       responses:
         201:
           description: Artist successfully added to favorites.
@@ -636,6 +797,8 @@ paths:
         - Favorites
       summary: Delete artist from favorites
       description: Delete artist from favorites by ID
+      security:
+        - access-token: []
       responses:
         204:
           description: Artist deleted successfully from favorites.

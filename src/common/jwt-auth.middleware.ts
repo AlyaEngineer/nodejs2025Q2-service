@@ -1,19 +1,28 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JwtAuthMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction) {
-    const { url, method } = req;
+  constructor(private readonly config: ConfigService) {}
 
-    if (
-      url === '/' ||
-      url.startsWith('/doc') ||
-      (url === '/auth/signup' && method === 'POST') ||
-      (url === '/auth/login' && method === 'POST') ||
-      (url === '/auth/refresh' && method === 'POST')
-    ) {
+  use(req: Request, res: Response, next: NextFunction) {
+    const jwtSecret = this.config.get<string>('JWT_SECRET');
+    const { method, originalUrl } = req;
+
+    const publicRoutes = [
+      { url: /^\/$/, methods: ['GET'] },
+      { url: /^\/doc/, methods: ['GET'] },
+      { url: /^\/auth\/signup$/, methods: ['POST'] },
+      { url: /^\/auth\/login$/, methods: ['POST'] },
+      { url: /^\/auth\/refresh$/, methods: ['POST'] },
+    ];
+
+    const isPublic = publicRoutes.some(
+      (route) => route.url.test(originalUrl) && route.methods.includes(method),
+    );
+    if (isPublic) {
       return next();
     }
 
@@ -25,7 +34,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
       return res.status(401).json({ message: 'Unauthorized' });
 
     try {
-      jwt.verify(token, process.env.JWT_SECRET);
+      jwt.verify(token, jwtSecret);
       return next();
     } catch {
       return res.status(401).json({ message: 'Unauthorized' });

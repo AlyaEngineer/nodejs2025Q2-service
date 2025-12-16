@@ -2,12 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule } from '@nestjs/swagger';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import * as YAML from 'yaml';
 import { CustomLogger } from './logger/logger.service';
 import { HttpExceptionFilter } from './logger/http-exception.filter';
+import { LoggingInterceptor } from './logger/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -17,6 +18,10 @@ async function bootstrap() {
   app.useLogger(customLogger);
 
   app.useGlobalFilters(new HttpExceptionFilter(customLogger));
+
+  app.useGlobalInterceptors(new LoggingInterceptor(customLogger));
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   const config = app.get(ConfigService);
   const PORT = config.get('PORT') || 4000;

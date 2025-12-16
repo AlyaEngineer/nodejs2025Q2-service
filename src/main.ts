@@ -7,6 +7,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import * as YAML from 'yaml';
 import { CustomLogger } from './logger/logger.service';
+import { HttpExceptionFilter } from './logger/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -14,6 +15,8 @@ async function bootstrap() {
   });
   const customLogger = new CustomLogger();
   app.useLogger(customLogger);
+
+  app.useGlobalFilters(new HttpExceptionFilter(customLogger));
 
   const config = app.get(ConfigService);
   const PORT = config.get('PORT') || 4000;

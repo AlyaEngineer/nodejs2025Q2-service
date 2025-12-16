@@ -37,9 +37,9 @@ export class CustomLogger implements LoggerService {
     writeToFile(this.logFile, 'verbose', message, context);
     this.consoleLogger.verbose(message, context);
   }
-  fatal?(message: any, context?: string) {
-    writeToFile(this.logFile, 'fatal', message, context);
-    writeToFile(this.errorFile, 'fatal', message, context);
+  fatal?(message: any, context?: string, trace?: string) {
+    writeToFile(this.logFile, 'fatal', message, context, trace);
+    writeToFile(this.errorFile, 'fatal', message, context, trace);
     this.consoleLogger.fatal(message, context);
   }
 }

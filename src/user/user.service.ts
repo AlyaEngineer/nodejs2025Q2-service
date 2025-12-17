@@ -10,6 +10,7 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { randomUUID } from 'node:crypto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -29,11 +30,13 @@ export class UserService {
       throw new ConflictException('Conflict. Login already exists');
     }
 
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
     const newUser = await this.prisma.user.create({
       data: {
         id: randomUUID(),
         login: dto.login,
-        password: dto.password,
+        password: hashedPassword,
         version: 1,
       },
     });
@@ -90,14 +93,17 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    if (user.password !== dto.oldPassword) {
+    const isMatch = await bcrypt.compare(dto.oldPassword, user.password);
+    if (!isMatch) {
       throw new ForbiddenException('oldPassword is wrong');
     }
+
+    const hashedNewPassword = await bcrypt.hash(dto.newPassword, 10);
 
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
-        password: dto.newPassword,
+        password: hashedNewPassword,
         version: { increment: 1 },
         updatedAt: Math.floor(Date.now()),
       },

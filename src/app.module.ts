@@ -1,4 +1,9 @@
-import { forwardRef, Module } from '@nestjs/common';
+import {
+  forwardRef,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -8,6 +13,9 @@ import { AlbumModule } from './album/album.module';
 import { TrackModule } from './track/track.module';
 import { FavsModule } from './favs/favs.module';
 import { PrismaModule } from './prisma';
+import { LoggerModule } from './logger/logger.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthMiddleware } from './common/jwt-auth.middleware';
 
 @Module({
   imports: [
@@ -20,8 +28,14 @@ import { PrismaModule } from './prisma';
     AlbumModule,
     TrackModule,
     forwardRef(() => FavsModule),
+    LoggerModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtAuthMiddleware).forRoutes('*');
+  }
+}

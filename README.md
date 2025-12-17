@@ -10,7 +10,7 @@ The application is fully containerized with Docker.
 - Use 24.x.x version (24.10.0 or upper) of [Node.js](https://nodejs.org/en/download).
 - Install [Docker](https://docs.docker.com/engine/install/) locally.
 
-### 🚀 Run locally
+### 🚀 Build and run locally
 
 - Clone the repository from GitHub:
 
@@ -21,7 +21,7 @@ git clone https://github.com/AlyaEngineer/nodejs2025Q2-service.git
 - Go to the development branch:
 
 ```bash
-git switch part-2
+git switch part-3
 ```
 
 - Create an `.env` file in the root directory of the project. You can use the provided `.env.example` as a template:
@@ -40,19 +40,43 @@ DB_NAME=
 DB_HOST=
 DB_PORT=
 DATABASE_URL=
+LOG_MAX_SIZE_KB=
+LOG_LEVEL=
+ERROR_LOG_FILE=
+INFO_LOG_FILE=
+JWT_SECRET=
+REFRESH_TOKEN_SECRET=
+ACCESS_TOKEN_TTL=
+REFRESH_TOKEN_TTL=
+JWT_SECRET_REFRESH_KEY=
 ```
-When running the application with Docker:
+**Notes:**
 
-- `DB_HOST` **must be set to** `db`, because this is the name of the PostgreSQL
-  service in `docker-compose.yaml`
-- `DB_PORT` is `5432` (default PostgreSQL port inside Docker network)
+**When running locally:**
 
-Other variables (`DB_USER`, `DB_PASSWORD`, `DB_NAME`) can be freely changed.
+  - DB_HOST = localhost
+
+  - DB_PORT = 5433 (or whatever port you mapped locally)
+
+**When using Docker:**
+
+  - DB_HOST = db (matches the service name in docker-compose.yaml)
+
+  - DB_PORT = 5432 (PostgreSQL default inside Docker network)
+
+Other variables (DB_USER, DB_PASSWORD, DB_NAME) can be changed freely.
+
 
 - Install dependencies:
 
 ```bash
 npm ci
+```
+
+- Start only the database container:
+
+```
+docker-compose up -d <db_service_name>
 ```
 
 - Generate Prisma client:
@@ -61,16 +85,25 @@ npm ci
 npx prisma generate
 ```
 
-- Start the server:
+- Run database migrations (if not already applied):
+
+```
+npx prisma migrate deploy
+```
+
+- Start the application:
 
 ```bash
 npm run start
 ```
 
-- Run all tests:
+- Run tests:
 
 ```bash
-npm run test
+npm run test:auth
+```
+```bash
+npm run test:refresh
 ```
 
 - Run the scan:
@@ -97,7 +130,16 @@ docker compose up --build
 docker images
 ```
 
-3. Stop containers
+3. Run tests:
+
+```bash
+npm run test:auth
+```
+```bash
+npm run test:refresh
+```
+
+4. Stop containers
 ```bash
 docker compose down
 ```

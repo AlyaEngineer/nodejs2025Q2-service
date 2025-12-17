@@ -14,6 +14,7 @@ model User {
   version   Int    @default(1)
   createdAt BigInt @default(dbgenerated("((EXTRACT(epoch FROM now()) * (1000)::numeric))::bigint"))
   updatedAt BigInt @default(dbgenerated("((EXTRACT(epoch FROM now()) * (1000)::numeric))::bigint"))
+  refreshToken String?
 
   @@map("user")
 }
@@ -22,6 +23,8 @@ model Artist {
   id     String  @id @default(uuid())
   name   String
   grammy Boolean
+  albums Album[]
+  tracks Track[]
 
   @@map("artist")
 }
@@ -31,6 +34,8 @@ model Album {
   name     String
   year     Int
   artistId String?
+  artist   Artist? @relation(fields: [artistId], references: [id])
+  tracks   Track[]
 
   @@map("album")
 }
@@ -41,6 +46,8 @@ model Track {
   artistId String?
   albumId  String?
   duration Int
+  album    Album?  @relation(fields: [albumId], references: [id])
+  artist   Artist? @relation(fields: [artistId], references: [id])
 
   @@map("track")
 }

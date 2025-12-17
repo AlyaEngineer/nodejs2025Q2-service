@@ -6,13 +6,38 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import * as YAML from 'yaml';
+import { CustomLogger } from './logger/logger.service';
+import { HttpExceptionFilter } from './logger/http-exception.filter';
+import { LoggingInterceptor } from './logger/logging.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+  const customLogger = new CustomLogger();
+  app.useLogger(customLogger);
+
+  app.useGlobalFilters(new HttpExceptionFilter(customLogger));
+
+  app.useGlobalInterceptors(new LoggingInterceptor(customLogger));
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  process.on('uncaughtException', (err) => {
+    customLogger.fatal('uncaughtException occurred', undefined, err.stack);
+    process.exit(1);
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    customLogger.fatal(
+      'unhandledRejection occurred',
+      undefined,
+      reason as string,
+    );
+  });
+
   const config = app.get(ConfigService);
   const PORT = config.get('PORT') || 4000;
-
-  app.useGlobalPipes(new ValidationPipe());
 
   async function initSwagger(app: INestApplication) {
     const file = await readFile(join(__dirname, '../doc/api.yaml'), 'utf8');
@@ -20,11 +45,11 @@ async function bootstrap() {
 
     SwaggerModule.setup('doc', app, document);
   }
-
+  app.enableCors();
   await initSwagger(app);
   await app.listen(PORT, '0.0.0.0');
 
-  console.log(`Server running at http://localhost:${PORT}`);
-  console.log(`Swagger is available at: http://localhost:${PORT}/doc`);
+  customLogger.log(`Server running at http://localhost:${PORT}`);
+  customLogger.log(`Swagger is available at: http://localhost:${PORT}/doc`);
 }
 bootstrap();

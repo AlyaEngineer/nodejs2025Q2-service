@@ -22,6 +22,8 @@ services:
       - app_net
     restart: unless-stopped
     command: npm run start:prod
+    volumes:
+      - ./logs:/app/logs
 
   db:
     build:

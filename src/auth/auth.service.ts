@@ -15,8 +15,8 @@ import { ConfigService } from '@nestjs/config';
 export class AuthService {
   private accessSecret: string;
   private refreshSecret: string;
-  private accessExpire: string;
-  private refreshExpire: string;
+  private accessExpire: jwt.SignOptions['expiresIn'];
+  private refreshExpire: jwt.SignOptions['expiresIn'];
   private saltRounds: number;
 
   constructor(
@@ -27,10 +27,8 @@ export class AuthService {
     this.refreshSecret = this.configService.get<string>(
       'JWT_SECRET_REFRESH_KEY',
     )!;
-    this.accessExpire =
-      this.configService.get<string>('ACCESS_TOKEN_TTL') || '1h';
-    this.refreshExpire =
-      this.configService.get<string>('REFRESH_TOKEN_TTL') || '24h';
+    this.accessExpire = this.configService.get('ACCESS_TOKEN_TTL') || '1h';
+    this.refreshExpire = this.configService.get('REFRESH_TOKEN_TTL') || '24h';
     this.saltRounds =
       Number(this.configService.get<number>('CRYPT_SALT')) || 10;
   }

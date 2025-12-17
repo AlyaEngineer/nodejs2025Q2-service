@@ -102,6 +102,9 @@ npm run start
 ```bash
 npm run test:auth
 ```
+```bash
+npm run test:refresh
+```
 
 - Run the scan:
 
@@ -131,6 +134,9 @@ docker images
 
 ```bash
 npm run test:auth
+```
+```bash
+npm run test:refresh
 ```
 
 4. Stop containers
